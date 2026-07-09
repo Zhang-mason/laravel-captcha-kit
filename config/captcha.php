@@ -28,31 +28,6 @@ return [
             'theme' => 'light', // light | dark
             'size' => 'normal', // normal | compact
         ],
-
-        'recaptcha_v3' => [
-            'site_key' => env('RECAPTCHA_V3_SITE_KEY'),
-            'secret_key' => env('RECAPTCHA_V3_SECRET_KEY'),
-            // Scores below this threshold are treated as failures.
-            'threshold' => (float) env('RECAPTCHA_V3_THRESHOLD', 0.5),
-            // Expected action; null skips action verification. Can be
-            // overridden per call via CaptchaRule::driver(...)->action(...).
-            'action' => null,
-        ],
-
-        'hcaptcha' => [
-            'site_key' => env('HCAPTCHA_SITE_KEY'),
-            'secret_key' => env('HCAPTCHA_SECRET_KEY'),
-            'mode' => env('HCAPTCHA_MODE', 'checkbox'), // checkbox | invisible
-            'theme' => 'light',
-        ],
-
-        'turnstile' => [
-            'site_key' => env('TURNSTILE_SITE_KEY'),
-            'secret_key' => env('TURNSTILE_SECRET_KEY'),
-            'mode' => env('TURNSTILE_MODE', 'managed'), // managed | non-interactive | invisible
-            'theme' => 'auto',
-        ],
-
     ],
 
     /*
