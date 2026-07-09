@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-09
+
 ### Added
 
 - `CaptchaManager` (Laravel Manager) with drivers: `recaptcha_v2`, `recaptcha_v3`, `hcaptcha`, `turnstile`.
