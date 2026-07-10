@@ -7,12 +7,12 @@ Unified captcha verification for Laravel. One Manager-based API in front of Goog
 ## Requirements
 
 - PHP 8.2+ (Laravel 13 requires PHP 8.3+)
-- Laravel 11 / 12 / 13
+- Laravel 12 / 13
 
 ## Installation
 
 ```bash
-composer require Zhang-mason/laravel-captcha-kit
+composer require zhang-mason/laravel-captcha-kit
 ```
 
 Publish the config file if you need to customise it:
