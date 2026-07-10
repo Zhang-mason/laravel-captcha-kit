@@ -1,5 +1,5 @@
 {
-    "name": "Zhang-mason/laravel-captcha-kit",
+    "name": "zhang-mason/laravel-captcha-kit",
     "description": "Unified captcha verification for Laravel — Google reCAPTCHA v2/v3, hCaptcha, and Cloudflare Turnstile behind one Manager-based API.",
     "license": "MIT",
     "keywords": [
