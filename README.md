@@ -12,7 +12,7 @@ Unified captcha verification for Laravel. One Manager-based API in front of Goog
 ## Installation
 
 ```bash
-composer require mason/captcha
+composer require Zhang-mason/laravel-captcha-kit
 ```
 
 Publish the config file if you need to customise it:
