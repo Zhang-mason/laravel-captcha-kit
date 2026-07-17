@@ -17,6 +17,13 @@ it('renders the invisible variant when configured', function () {
         ->assertSee('grecaptcha.execute()', false);
 });
 
+it('adds the csp nonce to the invisible inline script', function () {
+    config(['captcha.drivers.recaptcha_v2.mode' => 'invisible']);
+
+    $this->blade('<x-captcha csp-nonce="request-nonce" />')
+        ->assertSee('nonce="request-nonce"', false);
+});
+
 it('accepts theme and size overrides', function () {
     $this->blade('<x-captcha theme="dark" size="compact" />')
         ->assertSee('data-theme="dark"', false)

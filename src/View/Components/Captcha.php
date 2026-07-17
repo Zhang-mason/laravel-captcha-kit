@@ -15,6 +15,7 @@ class Captcha extends Component
         public ?string $size = null,
         public ?string $action = null,
         public ?string $form = null,
+        public ?string $cspNonce = null,
     ) {}
 
     public function render(): View

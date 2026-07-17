@@ -6,7 +6,7 @@
         data-size="invisible"
         data-callback="{{ $widgetId }}Done"
     ></div>
-    <script>
+    <script @if ($cspNonce) nonce="{{ $cspNonce }}" @endif>
         (function () {
             var widget = document.getElementById(@json($widgetId));
             var form = @if ($form) document.getElementById(@json($form)) @else widget.closest('form') @endif;
