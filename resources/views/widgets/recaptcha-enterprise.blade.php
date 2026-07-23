@@ -4,6 +4,7 @@
         data-sitekey="{{ $siteKey }}"
         data-theme="{{ $theme }}"
         data-size="{{ $size }}"
+        data-action="{{ $action }}"
     ></div>
 
     @once
