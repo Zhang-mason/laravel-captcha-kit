@@ -80,6 +80,42 @@ Route::post('/login', LoginController::class)->middleware('captcha:recaptcha_v3,
 
 Failed verifications throw a `ValidationException` (HTTP 422 for JSON requests, redirect back with errors otherwise).
 
+### Action resolution (reCAPTCHA v3 / Enterprise)
+
+Score-based drivers can verify that the token was generated for the expected action. The middleware, validation rule, and `<x-captcha />` component all resolve the action through the same priority chain, so you only need to declare it once:
+
+**1. Route metadata (Laravel 13.17+) — recommended**
+
+```php
+Route::post('/login', LoginController::class)
+    ->middleware('captcha')
+    ->metadata(['captcha_action' => 'login']);
+// <x-captcha /> on this page picks up 'login' automatically — no extra props needed.
+```
+
+**2. Explicit middleware param**
+
+```php
+Route::post('/login', LoginController::class)
+    ->middleware('captcha:recaptcha_v3,login');
+```
+
+**3. Named route inference (zero config)**
+
+```php
+Route::post('/login', LoginController::class)
+    ->name('auth.login')        // last segment → 'login'
+    ->middleware('captcha');
+```
+
+**4. Explicit on the validation rule**
+
+```php
+CaptchaRule::driver('recaptcha_v3')->action('login')
+```
+
+If none of the above is set, the driver falls back to the `action` key in its config block (or skips the action check when `null`).
+
 ### Facade
 
 ```php

@@ -29,10 +29,28 @@ class Captcha extends Component
             'mode' => (string) ($config['mode'] ?? 'checkbox'),
             'theme' => $this->theme ?? (string) ($config['theme'] ?? 'light'),
             'size' => $this->size ?? (string) ($config['size'] ?? 'normal'),
-            'action' => $this->action ?? (string) ($config['action'] ?? 'submit'),
+            'action' => $this->action ?? $this->routeAction() ?? (string) ($config['action'] ?? 'submit'),
             'form' => $this->form,
             'widgetId' => 'captcha-' . Str::random(8),
         ]);
+    }
+
+    private function routeAction(): ?string
+    {
+        $route = request()->route();
+
+        if ($route && method_exists($route, 'getMetadata')) {
+            $meta = $route->getMetadata('captcha_action');
+            if ($meta !== null) {
+                return (string) $meta;
+            }
+        }
+
+        if ($route && ($name = $route->getName())) {
+            return Str::afterLast($name, '.');
+        }
+
+        return null;
     }
 
     protected function widgetView(string $driver): string

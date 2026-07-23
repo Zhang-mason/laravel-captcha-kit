@@ -4,6 +4,7 @@ namespace Mason\Captcha\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Str;
 use Mason\Captcha\CaptchaManager;
 
 class CaptchaRule implements ValidationRule
@@ -35,8 +36,10 @@ class CaptchaRule implements ValidationRule
 
         $driver = $manager->driver($this->driverName);
 
-        if ($this->expectedAction !== null && method_exists($driver, 'expectAction')) {
-            $driver->expectAction($this->expectedAction);
+        $action = $this->expectedAction ?? $this->resolveRouteAction();
+
+        if ($action !== null && method_exists($driver, 'expectAction')) {
+            $driver->expectAction($action);
         }
 
         $result = $driver->verify(is_string($value) ? $value : '', request()?->ip());
@@ -44,5 +47,23 @@ class CaptchaRule implements ValidationRule
         if ($result->failed()) {
             $fail('captcha::validation.failed')->translate();
         }
+    }
+
+    private function resolveRouteAction(): ?string
+    {
+        $route = request()?->route();
+
+        if ($route && method_exists($route, 'getMetadata')) {
+            $meta = $route->getMetadata('captcha_action');
+            if ($meta !== null) {
+                return (string) $meta;
+            }
+        }
+
+        if ($route && ($name = $route->getName())) {
+            return Str::afterLast($name, '.');
+        }
+
+        return null;
     }
 }
