@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Http;
 use Mason\Captcha\CaptchaManager;
 use Mason\Captcha\Contracts\CaptchaDriver;
 use Mason\Captcha\Drivers\HCaptchaDriver;
+use Mason\Captcha\Drivers\ReCaptchaEnterpriseDriver;
 use Mason\Captcha\Drivers\ReCaptchaV2Driver;
 use Mason\Captcha\Drivers\ReCaptchaV3Driver;
 use Mason\Captcha\Drivers\TurnstileDriver;
@@ -24,6 +25,13 @@ it('resolves every built-in driver', function (string $name, string $class) {
     ['turnstile', TurnstileDriver::class],
 ]);
 
+it('resolves the enterprise driver, preferring a container-bound client', function () {
+    // Binding a client avoids the SDK looking up real credentials.
+    $this->fakeEnterpriseTransport();
+
+    expect(Captcha::driver('recaptcha_enterprise'))->toBeInstanceOf(ReCaptchaEnterpriseDriver::class);
+});
+
 it('uses the configured default driver', function () {
     config(['captcha.default' => 'recaptcha_v2']);
 
@@ -38,8 +46,7 @@ it('delegates verify to the default driver', function () {
 });
 
 it('supports custom drivers via extend', function () {
-    Captcha::extend('always_pass', fn () => new class implements CaptchaDriver
-    {
+    Captcha::extend('always_pass', fn () => new class () implements CaptchaDriver {
         public function verify(string $token, ?string $ip = null): VerificationResult
         {
             return new VerificationResult(success: true);

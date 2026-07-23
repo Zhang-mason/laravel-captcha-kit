@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- `recaptcha_enterprise` driver verifying tokens via the Google Cloud Assessment API (`google/cloud-recaptcha-enterprise`, suggested dependency).
+- `<x-captcha />` widget for reCAPTCHA Enterprise (score + checkbox modes).
+
 ## [1.0.0] - 2026-07-09
 
 ### Added

@@ -2,13 +2,16 @@
 
 namespace Mason\Captcha;
 
+use Google\Cloud\RecaptchaEnterprise\V1\Client\RecaptchaEnterpriseServiceClient;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Support\Manager;
 use Mason\Captcha\Contracts\CaptchaDriver;
 use Mason\Captcha\Drivers\HCaptchaDriver;
+use Mason\Captcha\Drivers\ReCaptchaEnterpriseDriver;
 use Mason\Captcha\Drivers\ReCaptchaV2Driver;
 use Mason\Captcha\Drivers\ReCaptchaV3Driver;
 use Mason\Captcha\Drivers\TurnstileDriver;
+use RuntimeException;
 
 class CaptchaManager extends Manager implements CaptchaDriver
 {
@@ -58,6 +61,32 @@ class CaptchaManager extends Manager implements CaptchaDriver
     protected function createRecaptchaV3Driver(): CaptchaDriver
     {
         return new ReCaptchaV3Driver(...$this->driverDependencies('recaptcha_v3'));
+    }
+
+    protected function createRecaptchaEnterpriseDriver(): CaptchaDriver
+    {
+        if (! class_exists(RecaptchaEnterpriseServiceClient::class)) {
+            throw new RuntimeException(
+                'Please install google/cloud-recaptcha-enterprise to use the recaptcha_enterprise driver.'
+            );
+        }
+
+        $config = (array) $this->config->get('captcha.drivers.recaptcha_enterprise', []);
+
+        // Prefer a container binding so tests and advanced users can supply
+        // their own client (custom endpoint, workload identity, ...).
+        $client = $this->container->bound(RecaptchaEnterpriseServiceClient::class)
+            ? $this->container->make(RecaptchaEnterpriseServiceClient::class)
+            : new RecaptchaEnterpriseServiceClient(array_filter([
+                'transport' => $config['transport'] ?? 'rest',
+                'credentials' => $config['credentials'] ?? null,
+            ]));
+
+        return new ReCaptchaEnterpriseDriver(
+            $client,
+            $config,
+            (string) $this->config->get('captcha.on_failure', 'fail'),
+        );
     }
 
     protected function createHcaptchaDriver(): CaptchaDriver

@@ -16,7 +16,8 @@ class Captcha extends Component
         public ?string $action = null,
         public ?string $form = null,
         public ?string $cspNonce = null,
-    ) {}
+    ) {
+    }
 
     public function render(): View
     {
@@ -30,7 +31,7 @@ class Captcha extends Component
             'size' => $this->size ?? (string) ($config['size'] ?? 'normal'),
             'action' => $this->action ?? (string) ($config['action'] ?? 'submit'),
             'form' => $this->form,
-            'widgetId' => 'captcha-'.Str::random(8),
+            'widgetId' => 'captcha-' . Str::random(8),
         ]);
     }
 
@@ -38,8 +39,9 @@ class Captcha extends Component
     {
         return match ($driver) {
             'recaptcha_v2' => 'captcha::widgets.recaptcha-v2',
+            'recaptcha_enterprise' => 'captcha::widgets.recaptcha-enterprise',
             // Backend verification works for every driver; widgets for the
-            // remaining providers land in a later release.
+            // remaining providers land one driver at a time.
             default => throw new InvalidArgumentException(
                 "No <x-captcha> widget for driver [{$driver}] yet. Render the widget manually and verify with Captcha::driver('{$driver}')->verify()."
             ),

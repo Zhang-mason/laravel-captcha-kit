@@ -30,6 +30,23 @@ it('accepts theme and size overrides', function () {
         ->assertSee('data-size="compact"', false);
 });
 
+it('renders the enterprise score widget by default', function () {
+    $this->blade('<x-captcha driver="recaptcha_enterprise" action="login" />')
+        ->assertSee('name="g-recaptcha-response"', false)
+        ->assertSee('var api = grecaptcha.enterprise;', false)
+        ->assertSee('{ action: "login" }', false)
+        ->assertSee('https://www.google.com/recaptcha/enterprise.js?render=test-site-key', false);
+});
+
+it('renders the enterprise checkbox widget when configured', function () {
+    config(['captcha.drivers.recaptcha_enterprise.mode' => 'checkbox']);
+
+    $this->blade('<x-captcha driver="recaptcha_enterprise" />')
+        ->assertSee('class="g-recaptcha"', false)
+        ->assertSee('https://www.google.com/recaptcha/enterprise.js"', false)
+        ->assertDontSee('enterprise.js?render=', false);
+});
+
 it('throws for drivers without a widget yet', function () {
     // Blade wraps component exceptions in a ViewException.
     $this->blade('<x-captcha driver="turnstile" />');

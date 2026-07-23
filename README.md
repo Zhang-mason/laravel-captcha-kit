@@ -1,8 +1,8 @@
-# mason/captcha
+# zhang-mason/captcha
 
-Unified captcha verification for Laravel. One Manager-based API in front of Google reCAPTCHA v2 (checkbox and invisible), reCAPTCHA v3, hCaptcha, and Cloudflare Turnstile — switch providers by changing config, not code.
+Unified captcha verification for Laravel. One Manager-based API in front of Google reCAPTCHA v2 (checkbox and invisible), reCAPTCHA v3, reCAPTCHA Enterprise, hCaptcha, and Cloudflare Turnstile — switch providers by changing config, not code.
 
-> **Status**: reCAPTCHA v2 is fully supported (backend verification, validation rule, middleware, and the `<x-captcha />` widget). Backend verification for reCAPTCHA v3, hCaptcha, and Turnstile is implemented; their frontend widgets are coming in a later release.
+> **Status**: reCAPTCHA v2 and reCAPTCHA Enterprise are fully supported (backend verification, validation rule, middleware, and the `<x-captcha />` widget). Backend verification for reCAPTCHA v3, hCaptcha, and Turnstile is implemented; their frontend widgets are coming in a later release.
 
 ## Requirements
 
@@ -44,7 +44,15 @@ Render the widget inside your form. The script tag is included automatically and
 </form>
 ```
 
-In `invisible` mode the widget binds to its surrounding form (or pass `form="form-id"`) and submits automatically once the challenge completes.
+In `invisible` mode the widget binds to its surrounding form (or pass `form="form-id"`) and submits automatically once the challenge completes. Score-based widgets (reCAPTCHA Enterprise in `score` mode) render a hidden input and fetch a token on submit:
+
+```blade
+<form method="POST" action="/login">
+    @csrf
+    <x-captcha driver="recaptcha_enterprise" action="login" />
+    <button type="submit">Log in</button>
+</form>
+```
 
 ### Validation rule
 
@@ -121,6 +129,28 @@ Captcha::fake()->scoring(0.3);  // simulate a v3 score
 ```
 
 You can also skip verification entirely per environment via `captcha.skip_environments` (defaults to `['testing']`).
+
+### reCAPTCHA Enterprise
+
+The `recaptcha_enterprise` driver verifies tokens through the Google Cloud Assessment API instead of `siteverify`. It needs the official SDK:
+
+```bash
+composer require google/cloud-recaptcha-enterprise
+```
+
+```dotenv
+CAPTCHA_DRIVER=recaptcha_enterprise
+RECAPTCHA_ENTERPRISE_SITE_KEY=your-site-key
+RECAPTCHA_ENTERPRISE_PROJECT_ID=your-gcp-project
+# Service account JSON file; omit to use Application Default Credentials.
+RECAPTCHA_ENTERPRISE_CREDENTIALS=/path/to/service-account.json
+RECAPTCHA_ENTERPRISE_MODE=score # or: checkbox, matching your key type
+RECAPTCHA_ENTERPRISE_THRESHOLD=0.5
+```
+
+The service account needs the `roles/recaptchaenterprise.agent` role. The SDK talks REST by default (no `grpc` PHP extension required); set `RECAPTCHA_ENTERPRISE_TRANSPORT=grpc` if you have it installed. Advanced setups can bind their own `RecaptchaEnterpriseServiceClient` in the container and the driver will use it.
+
+Score handling and `expectAction()` work the same as reCAPTCHA v3; Enterprise-specific details such as `riskAnalysis.reasons` are available on `VerificationResult::$raw`.
 
 ## Configuration notes
 

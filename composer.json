@@ -22,9 +22,13 @@
         "illuminate/support": "^12.0|^13.0"
     },
     "require-dev": {
+        "google/cloud-recaptcha-enterprise": "^2.0",
         "laravel/pint": "^1.13",
         "orchestra/testbench": "^10.0|^11.0",
         "pestphp/pest": "^2.34|^3.0|^4.0"
+    },
+    "suggest": {
+        "google/cloud-recaptcha-enterprise": "Required to use the recaptcha_enterprise driver (^2.0)."
     },
     "autoload": {
         "psr-4": {
